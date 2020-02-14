@@ -25,7 +25,7 @@ SQLAlchemy不只是某一款数据库软件的ORM，而是支持包含[MySQL](ht
 (venv) $ pip install flask-sqlalchemy
 ```
 
-## 数据库迁移
+### 数据库迁移
 
 我所见过的绝大多数数据库教程都是关于如何创建和使用数据库的，却没有指出当需要对现有数据库更新或者添加表结构时，应当如何应对。 这是一项困难的工作，因为关系数据库是以结构化数据为中心的，所以当结构发生变化时，数据库中的已有数据需要被迁移到修改后的结构中。
 
@@ -36,7 +36,7 @@ SQLAlchemy不只是某一款数据库软件的ORM，而是支持包含[MySQL](ht
 (venv) $ pip install flask-migrate
 ```
 
-## Flask-SQLAlchemy配置
+### Flask-SQLAlchemy配置
 
 开发阶段，我会使用SQLite数据库，SQLite数据库是开发小型乃至中型应用最方便的选择，因为每个数据库都存储在磁盘上的单个文件中，并且不需要像MySQL和PostgreSQL那样运行数据库服务。
 
@@ -60,7 +60,7 @@ Flask-SQLAlchemy插件从`SQLALCHEMY_DATABASE_URI`配置变量中获取应用的
 
 在这个初始化脚本中我更改了三处。首先，我添加了一个`db`对象来表示数据库。然后，我又添加了数据库迁移引擎`migrate`。这种注册Flask插件的模式希望你了然于胸，因为大多数Flask插件都是这样初始化的。最后，我在底部导入了一个名为`models`的模块，这个模块将会用来定义数据库结构。
 
-## 数据库模型
+### 数据库模型
 
 定义数据库中一张表及其字段的类，通常叫做数据模型。ORM(SQLAlchemy)会将类的实例关联到数据库表中的数据行，并翻译相关操作。
 
@@ -84,7 +84,7 @@ Flask-SQLAlchemy插件从`SQLALCHEMY_DATABASE_URI`配置变量中获取应用的
 <None><User gigi>, <Email gigi@example.com>
 ```
 
-## 创建数据库迁移存储库
+### 创建数据库迁移存储库
 
 上一节中创建的模型类定义了此应用程序的初始数据库结构（*元数据*）。 但随着应用的不断增长，很可能会新增、修改或删除数据库结构。 Alembic（Flask-Migrate使用的迁移框架）将以一种不需要重新创建数据库的方式进行数据库结构的变更。
 
@@ -107,7 +107,7 @@ Flask-Migrate通过`flask`命令暴露来它的子命令。 你已经看过`flas
 
 运行迁移初始化命令之后，你会发现一个名为*migrations*的新目录。该目录中包含一个名为*versions*的子目录以及若干文件。从现在起，这些文件就是你项目的一部分了，应该添加到代码版本管理中去。
 
-## 第一次数据库迁移
+### 第一次数据库迁移
 
 包含映射到`User`数据库模型的用户表的迁移存储库生成后，是时候创建第一次数据库迁移了。 有两种方法来创建数据库迁移：手动或自动。 要自动生成迁移，Alembic会将数据库模型定义的数据库模式与数据库中当前使用的实际数据库模式进行比较。 然后，使用必要的更改来填充迁移脚本，以使数据库模式与应用程序模型匹配。 当前情况是，由于之前没有数据库，自动迁移将把整个User模型添加到迁移脚本中。 `flask db migrate`子命令生成这些自动迁移：
 ```
@@ -134,7 +134,7 @@ INFO  [alembic.runtime.migration] Running upgrade  -> e517276bb1c2, users table
 
 因为本应用使用SQLite，所以`upgrade`命令检测到数据库不存在时，会创建它（在这个命令完成之后，你会注意到一个名为*app.db*的文件，即SQLite数据库）。 在使用类似MySQL和PostgreSQL的数据库服务时，必须在运行`upgrade`之前在数据库服务器上创建数据库。
 
-## 数据库升级和降级流程
+### 数据库升级和降级流程
 
 目前，本应用还处于初期阶段，但讨论一下未来的数据库迁移战略也无伤大雅。 假设你的开发计算机上存有应用的源代码，并且还将其部署到生产服务器上，运行应用并上线提供服务。
 
@@ -146,7 +146,7 @@ INFO  [alembic.runtime.migration] Running upgrade  -> e517276bb1c2, users table
 
 正如我前面提到的，`flask db downgrade`命令可以回滚上次的迁移。 虽然在生产系统上不太可能需要此选项，但在开发过程中可能会发现它非常有用。 你可能已经生成了一个迁移脚本并将其应用，只是发现所做的更改并不完全是你所需要的。 在这种情况下，可以降级数据库，删除迁移脚本，然后生成一个新的来替换它。
 
-## 数据库模型变更生效
+### 数据库模型变更生效
 
 一旦我变更了应用模型，就需要生成一个新的数据库迁移：
 ```
@@ -167,3 +167,110 @@ INFO  [alembic.runtime.migration] Running upgrade e517276bb1c2 -> 780739b227a7, 
 ```
 
 如果你对项目使用了版本控制，记得将新的迁移脚本添加进去并提交。
+
+## 二、国际化和本地化
+
+`Babel`实例提供了一个`localeselector`装饰器。 为每个请求调用装饰器函数以选择用于该请求的语言：
+
+`app/__init__.py`：选择最匹配的语言。
+
+```
+from flask import request
+
+# ...
+
+@babel.localeselector
+def get_locale():
+    return request.accept_languages.best_match(app.config['LANGUAGES'])
+```
+
+这里我使用了Flask中`request`对象的属性`accept_languages`。 `request`对象提供了一个高级接口，用于处理客户端发送的带[Accept-Language](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Accept-Language)头部的请求。 该头部指定了客户端语言和区域设置首选项。 该头部的内容可以在浏览器的首选项页面中配置，默认情况下通常从计算机操作系统的语言设置中导入。 大多数人甚至不知道存在这样的设置，但是这是有用的，因为应用可以根据每个语言的权重，提供优选语言的列表。 为了满足你的好奇心，下面是一个复杂的`Accept-Languages`头部的例子：
+
+```
+Accept-Language: da, en-gb;q=0.8, en;q=0.7
+```
+
+这表示丹麦语（`da`）是首选语言（默认权重= 1.0），其次是英式英语（`en-GB`），其权重为0.8，最后是通用英语（`en`），权重为0.7。
+
+要选择最佳语言，你需要将客户请求的语言列表与应用支持的语言进行比较，并使用客户端提供的权重，查找最佳语言。 这样做的逻辑有点复杂，但它已经全部封装在`best_match()`方法中了，该方法将应用提供的语言列表作为参数并返回最佳选择。
+
+### 提取文本进行翻译
+
+一旦应用所有`_()`和`_l()`都到位了，你可以使用`pybabel`命令将它们提取到一个*.pot*文件中，该文件代表*可移植对象模板*。 这是一个文本文件，其中包含所有标记为需要翻译的文本。 这个文件的目的是作为一个模板来为每种语言创建翻译文件。
+
+提取过程需要一个小型配置文件，告诉pybabel哪些文件应该被扫描以获得可翻译的文本。 下面你可以看到我为这个应用创建的*babel.cfg*：
+
+*babel.cfg*：PyBabel配置文件。
+
+```
+[python: app/**.py]
+[jinja2: app/templates/**.html]
+extensions=jinja2.ext.autoescape,jinja2.ext.with_
+```
+
+前两行分别定义了Python和Jinja2模板文件的文件名匹配模式。 第三行定义了Jinja2模板引擎提供的两个扩展，以帮助Flask-Babel正确解析模板文件。
+
+可以使用以下命令来将所有文本提取到* .pot *文件：
+
+```
+(venv) $ pybabel extract -F babel.cfg -k _l -o messages.pot .
+```
+
+`pybabel extract`命令读取`-F`选项中给出的配置文件，然后从命令给出的目录（当前目录或本处的`.` ）扫描与配置的源匹配的目录中的所有代码和模板文件。 默认情况下，`pybabel`将查找`_()`以作为文本标记，但我也使用了重命名为`_l()`的延迟版本，所以我需要用`-k _l`来告诉该工具也要查找它 。 `-o`选项提供输出文件的名称。
+
+我应该注意，*messages.pot*文件不需要合并到项目中。 这是一个只要再次运行上面的命令，就可以在需要时轻松地重新生成的文件。 因此，不需要将该文件提交到源代码管理。
+
+### 生成语言目录
+
+该过程的下一步是在除了原始语言（在本例中为英语）之外，为每种语言创建一份翻译。 我要从添加中文（语言代码`zh`）开始，所以这样做的命令是：
+
+```
+(venv) $ pybabel init -i messages.pot -d app/translations -l zh
+creating catalog app/translations/es/LC_MESSAGES/messages.po based on messages.pot
+```
+
+`pybabel init`命令将*messages.pot*文件作为输入，并将语言目录写入`-d`选项中指定的目录中，`-l`选项中指定的是翻译语言。 我将在*app/translations*目录中安装所有翻译，因为这是Flask-Babel默认提取翻译文件的地方。 该命令将在该目录内为中文数据文件创建一个*zh*子目录。 特别是，将会有一个名为*app/translations/zh/LC_MESSAGES/messages.po*的新文件，是需要翻译的文件路径。
+
+如果你想支持其他语言，只需要各自的语言代码重复上述命令，就能使得每种语言都有一个包含*messages.po*文件的存储库。
+
+当你想开始使用这些翻译后的文本时，这个文件需要被编译成一种格式，这种格式在运行时可以被应用程序使用。 要编译应用程序的所有翻译，可以使用`pybabel compile`命令，如下所示：
+
+```
+(venv) $ pybabel compile -d app/translations
+compiling catalog app/translations/zh/LC_MESSAGES/messages.po to
+app/translations/zh/LC_MESSAGES/messages.mo
+```
+
+此操作在每个语言存储库中的*messages.po*旁边添加*messages.mo*文件。 *.mo*文件是Flask-Babel将用于为应用程序加载翻译的文件。
+
+在为中文或任何其他添加到项目中的语言创建*messages.mo*文件之后，可以在应用中使用这些语言。 如果你想查看应用程序以中文显示的方式，则可以在Web浏览器中编辑语言配置，以将中文语作为首选语言。 对Chrome，这是设置页面的高级部分：
+
+![Chrome语言选项](http://upload-images.jianshu.io/upload_images/4961528-e943991eeb05c2fc..png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+
+如果你不想更改浏览器设置，另一种方法是通过使`localeselector`函数始终返回一种语言来强制实现。 对中文，你可以这样做：
+
+`app/__init__.py`：选择最佳语言。
+
+```
+@babel.localeselector
+def get_locale():
+    # return request.accept_languages.best_match(app.config['LANGUAGES'])
+    return 'zh'
+```
+
+使用为中文配置的浏览器运行该应用或返回`zh`的`localeselector`函数，将使所有文本在使用该应用时显示为中文。
+
+### 更新翻译
+
+处理翻译时的一个常见情况是，即使翻译文件不完整，你也可能要开始使用翻译文件。 这是非常好的，你可以编译一个不完整的*messages.po*文件，任何可用的翻译都将被使用，而任何缺失的部分将使用原始语言。 随后，你可以继续处理翻译并再次编译，以便在取得进展时更新*messages.mo*文件。
+
+如果在添加`_()`包装器时错过了一些文本，则会出现另一种常见情况。 在这种情况下，你会发现你错过的那些文本将保持为英文，因为Flask-Babel对他们一无所知。 当你检测到这种情况时，会想要将其用`_()`或`_l()`包装，然后执行更新过程，这包括两个步骤：
+
+```
+(venv) $ pybabel extract -F babel.cfg -k _l -o messages.pot .
+(venv) $ pybabel update -i messages.pot -d app/translations
+```
+
+`extract`命令与我之前执行的命令相同，但现在它会生成*messages.pot*的新版本，其中包含所有以前的文本以及最近用`_()`或`_l()`包装的文本。 `update`调用采用新的`messages.pot`文件并将其合并到与项目相关的所有*messages.po*文件中。 这将是一个智能合并，其中任何现有的文本将被单独保留，而只有在*messages.pot*中添加或删除的条目才会受到影响。
+
+*messages.po*文件更新后，你就可以继续新的测试了，再次编译它，以便对应用生效。
