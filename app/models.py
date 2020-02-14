@@ -112,6 +112,7 @@ class Post(db.Model):
     （请注意，在utcnow之后我没有包含()，所以我传递函数本身，而不是调用它的结果）。
     '''
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))  # Flask-SQLAlchemy自动设置类名为小写来作为对应表的名称。
+    language = db.Column(db.String(5))  # 用于保存动态是什么语言
 
     def __repr__(self):
         return '<Post {}>'.format(self.body)

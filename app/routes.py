@@ -1,5 +1,5 @@
 from datetime import datetime
-from flask import render_template, flash, redirect, url_for, request
+from flask import render_template, flash, redirect, url_for, request, g
 from flask_login import current_user, login_user, logout_user, login_required  # 用户登录插件
 from flask_babel import _, get_locale  # _()函数随后返回翻译后的文本
 from app.models import User, Post
@@ -12,13 +12,12 @@ from werkzeug.urls import url_parse
 
 @app1.before_request
 def before_request():
-    """
-    记录用户发起请求时的时间
-    """
+    """记录用户发起请求时的时间"""
     if current_user.is_authenticated:
         current_user.last_seen = datetime.utcnow()
         db.session.commit()  # 不必要db.session.add()
         # 考虑在引用current_user时，Flask-Login将调用用户加载函数，该函数将运行一个数据库查询并将目标用户添加到数据库会话中。
+    g.locale = str(get_locale())  # 将语言环境添加到g对象, 以便我可以从base模板中访问它,并以正确的语言配置moment.js
 
 
 @app1.route('/', methods=['GET', 'POST'])

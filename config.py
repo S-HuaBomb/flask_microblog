@@ -25,6 +25,6 @@ class Config:
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
     ADMINS = ['1712317024@qq.com']
 
-    POSTS_PER_PAGE = 25  # 每页展示的数据列表长度
+    POSTS_PER_PAGE = 10  # 每页展示的数据列表长度
 
     LANGUAGES = ['en', 'zh']  # 国际化语言种类

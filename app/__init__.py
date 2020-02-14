@@ -42,6 +42,7 @@ def get_locale():
        best_match:，该方法将应用提供的语言列表作为参数，并使用客户端提供的权重，查找最佳语言并返回最佳选择
     """
     return request.accept_languages.best_match(app1.config['LANGUAGES'])
+    # return 'zh'
 
 # routes中要引用app1，所以要放在后面
 from app import routes, models, errors  # models的模块，这个模块将会用来定义数据库结构。

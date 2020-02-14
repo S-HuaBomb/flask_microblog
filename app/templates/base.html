@@ -65,4 +65,6 @@
 <!-- 引入moment.js库 -->
     {{ super() }}
     {{ moment.include_moment() }}
+    <!-- 日期和时间都与文本使用相同的语言 -->
+    {{ moment.lang(g.locale) }}
 {% endblock %}
