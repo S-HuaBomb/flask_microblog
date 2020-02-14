@@ -2,14 +2,6 @@
 这是使用 Flask 创建的微博客，以熟悉和掌握 Flask WEB 开发
 
 
-本文翻译自 [The Flask Mega-Tutorial Part IV: Database](https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-iv-database)
-
-在Flask Mega-Tutorial系列的第四部分，我将告诉你如何使用*数据库*。
-
-本章的主题是重中之重！大多数应用都需要持久化存储数据，并高效地执行的增删查改的操作，*数据库*为此而生。
-
-*本章的GitHub链接为： [Browse](https://github.com/miguelgrinberg/microblog/tree/v0.4), [Zip](https://github.com/miguelgrinberg/microblog/archive/v0.4.zip), [Diff](https://github.com/miguelgrinberg/microblog/compare/v0.3...v0.4).*
-
 ## 一、Flask中的数据库
 
 Flask本身不支持数据库，相信你已经听说过了。 正如表单那样，这也是Flask有意为之。对使用的数据库插件自由选择，岂不是比被迫适应其中之一，更让人拥有主动权吗？
