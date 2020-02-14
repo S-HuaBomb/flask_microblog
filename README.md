@@ -10,7 +10,7 @@
 
 *本章的GitHub链接为： [Browse](https://github.com/miguelgrinberg/microblog/tree/v0.4), [Zip](https://github.com/miguelgrinberg/microblog/archive/v0.4.zip), [Diff](https://github.com/miguelgrinberg/microblog/compare/v0.3...v0.4).*
 
-## Flask中的数据库
+## 一、Flask中的数据库
 
 Flask本身不支持数据库，相信你已经听说过了。 正如表单那样，这也是Flask有意为之。对使用的数据库插件自由选择，岂不是比被迫适应其中之一，更让人拥有主动权吗？
 
@@ -145,3 +145,25 @@ INFO  [alembic.runtime.migration] Running upgrade  -> e517276bb1c2, users table
 当准备将新版本的应用发布到生产服务器时，你只需要获取包含新增迁移脚本的更新版本的应用，然后运行`flask db upgrade`即可。 Alembic将检测到生产数据库未更新到最新版本，并运行在上一版本之后创建的所有新增迁移脚本。
 
 正如我前面提到的，`flask db downgrade`命令可以回滚上次的迁移。 虽然在生产系统上不太可能需要此选项，但在开发过程中可能会发现它非常有用。 你可能已经生成了一个迁移脚本并将其应用，只是发现所做的更改并不完全是你所需要的。 在这种情况下，可以降级数据库，删除迁移脚本，然后生成一个新的来替换它。
+
+## 数据库模型变更生效
+
+一旦我变更了应用模型，就需要生成一个新的数据库迁移：
+```
+(venv) $ flask db migrate -m "posts table"
+INFO  [alembic.runtime.migration] Context impl SQLiteImpl.
+INFO  [alembic.runtime.migration] Will assume non-transactional DDL.
+INFO  [alembic.autogenerate.compare] Detected added table 'post'
+INFO  [alembic.autogenerate.compare] Detected added index 'ix_post_timestamp' on '['timestamp']'
+  Generating /home/miguel/microblog/migrations/versions/780739b227a7_posts_table.py ... done
+```
+
+并将这个迁移应用到数据库：
+```
+(venv) $ flask db upgrade
+INFO  [alembic.runtime.migration] Context impl SQLiteImpl.
+INFO  [alembic.runtime.migration] Will assume non-transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade e517276bb1c2 -> 780739b227a7, posts table
+```
+
+如果你对项目使用了版本控制，记得将新的迁移脚本添加进去并提交。
