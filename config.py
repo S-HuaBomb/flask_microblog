@@ -32,3 +32,4 @@ class Config:
     # 百度翻译
     FANYI_APP_ID = '20200215000384333'
     FANYI_SECRET_KEY = 'FKBKcblpqRX3RfCQSsZE'
+    LANG_DIFF = {'ja': 'jp', 'es': 'spa', 'fr': 'fra', 'ko': 'kor', 'zh-cn': 'zh'}  # 百度翻译语言列表，与语言检测的缩写不一致

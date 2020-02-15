@@ -17,9 +17,20 @@
                 {% endset %}
                 {{ _('%(username)s said %(when)s', username=user_link, when=moment(post.timestamp).fromNow()) }}
                 <br>
-                <span id="post{{ post.id }}">
+                <span id="post{{ post.id }}">  <!-- 加上id是为了JS使用DOM读取用户动态，再翻译 -->
+                    <!-- $符号是jQuery库提供的函数的名称。这个库被Bootstrap使用.使用jQuery定位<span>元素并提取其中的文本。 -->
                     {{ post.body }}
                 </span>
+                {% if post.language and post.language != g.locale %}  <!-- 与当前语言不匹配的情况下才需要翻译 -->
+                <br><br>
+                <span id="translation{{ post.id }}">
+                    <a href="javascript:translate(
+                                '#post{{ post.id }}',
+                                '#translation{{ post.id }}',
+                                '{{ post.language }}',
+                                '{{ g.locale }}');">{{ _('Translate') }}</a>
+                </span>
+                {% endif %}
             </td>
         </tr>
     </table>

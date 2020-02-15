@@ -15,9 +15,9 @@ httpClient = None
 myurl = '/api/trans/vip/translate'
 
 fromLang = 'auto'  # 原文语种
-toLang = 'zh'  # 译文语种
+toLang = 'en'  # 译文语种
 salt = random.randint(32768, 65536)
-q = 'apple'
+q = '你想要一个苹果吗？去你妈的！'
 sign = appid + q + str(salt) + secretKey
 sign = hashlib.md5(sign.encode()).hexdigest()
 translate_url = myurl + '?appid=' + appid + '&q=' + parse.quote(q) \

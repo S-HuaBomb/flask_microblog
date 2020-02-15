@@ -67,4 +67,26 @@
     {{ moment.include_moment() }}
     <!-- 日期和时间都与文本使用相同的语言 -->
     {{ moment.lang(g.locale) }}
+
+    <script>
+        function translate(srcElem, dstElem, srcLang, dstLang) {
+            $(dstElem).html("<img src='{{ url_for('static', filename='loading.gif') }}'>");
+            $.post('/translate', {
+                /**
+                 * 这个函数以一种类似于浏览器提交Web表单的格式向服务器提交数据
+                 * 这很方便，因为它允许Flask将这些数据合并到request.form字典中
+                 * 参数是两个:
+                 * 第一个是发送请求的URL，
+                 * 第二个是包含服务器期望的三个数据项的字典
+                 */
+                text_query: $(srcElem).text(),
+                src_lang: srcLang,
+                dst_lang: dstLang
+            }).done(function (response) {
+                $(dstElem).text(response['text'])
+            }).fail(function () {
+                $(dstElem).text("{{ _('Error: Could not contact server.') }}")
+            });
+        }
+    </script>
 {% endblock %}

@@ -1,13 +1,17 @@
 from datetime import datetime
-from flask import render_template, flash, redirect, url_for, request, g
-from flask_login import current_user, login_user, logout_user, login_required  # 用户登录插件
+
+from flask import render_template, flash, redirect, url_for, request, g, jsonify
 from flask_babel import _, get_locale  # _()函数随后返回翻译后的文本
-from app.models import User, Post
-from app.email import send_password_reset_email
-from app import app1, db
-from app.forms import LoginForm, RegistrationForm, EditProfileForm, PostForm,\
-    ResetPasswordRequestForm, ResetPasswordForm
+from flask_login import current_user, login_user, logout_user, login_required  # 用户登录插件
+from langdetect import detect  # 谷歌语言检测
 from werkzeug.urls import url_parse
+
+from app import app1, db
+from app.email import send_password_reset_email
+from app.forms import LoginForm, RegistrationForm, EditProfileForm, PostForm, \
+    ResetPasswordRequestForm, ResetPasswordForm
+from app.models import User, Post
+from app.translate import translate
 
 
 @app1.before_request
@@ -26,7 +30,13 @@ def before_request():
 def index():
     form = PostForm()
     if form.validate_on_submit():
-        post = Post(body=form.post.data, author=current_user)
+        diff = app1.config['LANG_DIFF']  # 翻译和检测出的语言缩写不一致
+        language = detect(form.post.data)  # 还是谷歌牛逼！
+        if language in diff.keys():
+            language = diff.get(language)
+        if len(language) > 5:
+            language = ''
+        post = Post(body=form.post.data, author=current_user, language=language)
         db.session.add(post)
         db.session.commit()
         flash(_('Your post is now live!'))
@@ -46,6 +56,18 @@ def index():
     return render_template('index.html', title='Home Page', form=form, posts=posts.items,
                            next_url=next_url, prev_url=prev_url)
     # return render_template('index.html', title='Home Page', posts=posts)
+
+
+@app1.route('/translate', methods=['POST'])
+@login_required
+def translate_text():
+    """
+    request.form属性是Flask用提交中包含的所有数据暴露的字典
+    jsonify()返回的值是将被发送回客户端的HTTP响应。
+    """
+    return jsonify({'text': translate(request.form['text_query'],
+                                      request.form['src_lang'],
+                                      request.form['dst_lang'])})
 
 
 @app1.route('/login', methods=['GET', 'POST'])
