@@ -1,7 +1,13 @@
 from datetime import datetime, timedelta
 import unittest
-from app import app1, db
+from app import create_app, db
 from app.models import User, Post
+from config import Config
+
+
+class TestConfig(Config):
+    TESTING = True
+    SQLALCHEMY_DATABASE_URI = 'sqlite://'
 
 
 class UserModelCase(unittest.TestCase):
@@ -9,15 +15,18 @@ class UserModelCase(unittest.TestCase):
     单元测试:
     更改代码后要重新运行、添加新功能后要为其编写一个单元测试
     """
-    def setUp(self) -> None:
+    def setUp(self) -> None:  # -> 标志返回值类型
         """运行测试前的配置"""
-        app1.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite://'  # 从头开始创建数据库，而不是使用开发中的数据库
+        self.app = create_app(TestConfig)
+        self.app_context = self.app.app_context()
+        self.app_context.push()
         db.create_all()
 
-    def tearDown(self) -> None:  # -> 标志返回值类型
+    def tearDown(self) -> None:
         """测试完成后的操作"""
         db.session.remove()
         db.drop_all()
+        self.app_context.pop()
 
     def test_password_hashing(self):
         u = User(username='susan')

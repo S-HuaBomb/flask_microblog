@@ -1,4 +1,4 @@
-from app import app1, db, cli
+from app import create_app, db, cli
 from app.models import User, Post
 
 '''
@@ -9,7 +9,11 @@ FLASK_APP=microblog.py
 '''
 
 
-@app1.shell_context_processor
+app = create_app()
+cli.register(app)
+
+
+@app.shell_context_processor
 def make_shell_context():
     """
     app.shell_context_processor装饰器将该函数注册为一个shell上下文函数。

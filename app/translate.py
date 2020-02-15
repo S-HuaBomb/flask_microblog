@@ -3,18 +3,18 @@ import random
 from urllib import parse  # 对文本进行 url encode 再拼接到 url_full 中
 from hashlib import md5  # 生成url的签名
 from http.client import HTTPConnection
+from flask import current_app
 from flask_babel import _
-from app import app1
 
 url_head = '/api/trans/vip/translate'
 
 
 def translate(text_query, src_lang, dst_lang):
-    if 'FANYI_APP_ID' not in app1.config or not app1.config['FANYI_APP_ID']:
+    if 'FANYI_APP_ID' not in current_app.config or not current_app.config['FANYI_APP_ID']:
         return _('Error: The translation service is not configured.')
 
-    app_id = app1.config['FANYI_APP_ID']
-    secret_key = app1.config['FANYI_SECRET_KEY']
+    app_id = current_app.config['FANYI_APP_ID']
+    secret_key = current_app.config['FANYI_SECRET_KEY']
     salt = random.randint(32768, 65536)  # 生成url签名所需的随机数
     sign_str = app_id + text_query + str(salt) + secret_key  # 按照 appid+q+salt+密钥 的顺序拼接得到字符串
     sign = md5(sign_str.encode()).hexdigest()  # 对字符串做md5，得到32位小写的sign
