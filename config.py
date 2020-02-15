@@ -28,3 +28,7 @@ class Config:
     POSTS_PER_PAGE = 10  # 每页展示的数据列表长度
 
     LANGUAGES = ['en', 'zh']  # 国际化语言种类
+
+    # 百度翻译
+    FANYI_APP_ID = '20200215000384333'
+    FANYI_SECRET_KEY = 'FKBKcblpqRX3RfCQSsZE'
