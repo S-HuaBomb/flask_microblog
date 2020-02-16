@@ -55,7 +55,6 @@ def index():
     """
     return render_template('index.html', title='Home Page', form=form, posts=posts.items,
                            next_url=next_url, prev_url=prev_url)
-    # return render_template('index.html', title='Home Page', posts=posts)
 
 
 @bp.route('/translate', methods=['POST'])
