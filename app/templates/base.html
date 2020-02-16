@@ -70,7 +70,7 @@
 
     <script>
         function translate(srcElem, dstElem, srcLang, dstLang) {
-            $(dstElem).html("<img src='{{ url_for('static', filename='loading.gif') }}'>");
+            $(dstElem).html("<img src='{{ url_for('static', filename='loading.gif') }}'>");  // 加载图片
             $.post('/translate', {
                 /**
                  * 这个函数以一种类似于浏览器提交Web表单的格式向服务器提交数据

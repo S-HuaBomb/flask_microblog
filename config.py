@@ -29,7 +29,7 @@ class Config:
 
     LANGUAGES = ['en', 'zh']  # 国际化语言种类
 
-    # 百度翻译
+    """百度翻译"""
     FANYI_APP_ID = str(os.environ.get('FANYI_APP_ID'))
     FANYI_SECRET_KEY = os.environ.get('FANYI_SECRET_KEY')
     LANG_DIFF = {'ja': 'jp', 'es': 'spa', 'fr': 'fra', 'ko': 'kor', 'zh-cn': 'zh'}  # 百度翻译语言列表，与语言检测的缩写不一致

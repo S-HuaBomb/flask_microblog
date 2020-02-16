@@ -35,7 +35,7 @@ def create_app(config_class=Config):
     """
     应用工厂函数
 
-    return: app, 局部变量
+    return: app, 成了局部变量
     """
     app = Flask(__name__)
     app.config.from_object(config_class)

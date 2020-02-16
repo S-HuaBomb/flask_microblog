@@ -35,6 +35,7 @@ def index():
             language = diff.get(language)
         if len(language) > 5:
             language = ''
+
         post = Post(body=form.post.data, author=current_user, language=language)
         db.session.add(post)
         db.session.commit()
@@ -63,6 +64,7 @@ def translate_text():
     """
     request.form属性是Flask用提交中包含的所有数据暴露的字典
     jsonify()返回的值是将被发送回客户端的HTTP响应。
+    在base.html中通过Jquery读取'text'
     """
     return jsonify({'text': translate(request.form['text_query'],
                                       request.form['src_lang'],

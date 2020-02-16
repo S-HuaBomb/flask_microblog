@@ -18,8 +18,8 @@ def translate(text_query, src_lang, dst_lang):
     salt = random.randint(32768, 65536)  # 生成url签名所需的随机数
     sign_str = app_id + text_query + str(salt) + secret_key  # 按照 appid+q+salt+密钥 的顺序拼接得到字符串
     sign = md5(sign_str.encode()).hexdigest()  # 对字符串做md5，得到32位小写的sign
-    url_full = url_head + '?appid=' + app_id + '&q=' + parse.quote(text_query) \
-               + '&from=' + src_lang + '&to=' + dst_lang + '&salt=' + str(salt) + '&sign=' + sign
+    url_full = '{}?appid={}&q={}&from={}&to={}&salt={}&sign={}'.format(url_head, app_id, parse.quote(text_query),
+                                                                       src_lang, dst_lang, str(salt), sign)
 
     httpClient = None
     try:
