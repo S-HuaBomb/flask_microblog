@@ -11,6 +11,8 @@ from flask_migrate import Migrate  # 数据库迁移插件
 from flask_moment import Moment  # 日期格式化插件
 from flask_sqlalchemy import SQLAlchemy  # ORM插件
 
+from elasticsearch import Elasticsearch
+
 from config import Config
 
 """
@@ -56,6 +58,10 @@ def create_app(config_class=Config):
 
     from app.main import bp as main_bp
     app.register_blueprint(main_bp)
+
+    # elasticsearch 属性
+    app.elasticsearch = Elasticsearch([app.config['ELASTICSEARCH_URL']]) \
+        if app.config['ELASTICSEARCH_URL'] else None
 
     if not app.debug and not app.testing:
         # 发送日志到邮箱：

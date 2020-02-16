@@ -4,6 +4,7 @@ import jwt  # JSON Web Token
 from hashlib import md5  # 用于Gravatar的URL的哈希
 from flask import current_app
 from app import db, login
+from app.search import add_to_index, remove_from_index, query_index
 from werkzeug.security import generate_password_hash, check_password_hash  # 密码hash插件
 from flask_login import UserMixin
 
@@ -14,18 +15,64 @@ from flask_login import UserMixin
     >> flask db upgrade(将更改应用到数据库)
 """
 
-# 粉丝关联表(用户表自关联多对多)
+
+class SearchableMixin:
+    """
+    模板类继承此类即可直接调用以下四个类方法，而不需实例化
+    """
+
+    @classmethod
+    def search(cls, expression, page, per_page):
+        """返回替换ID列表的查询结果集，以及搜索结果的总数"""
+        ids, total = query_index(cls.__tablename__, expression, page, per_page)
+        if total == 0:
+            return cls.query.filter_by(id=0), 0
+        when = []
+        for i in range(len(ids)):
+            when.append((ids[i], i))
+        return cls.query.filter(cls.id.in_(ids)).order_by(
+            db.case(when, value=cls.id)), total
+
+    @classmethod
+    def before_commit(cls, session):
+        """来自SQLAlchemy事件，保存会话提交前将要更改的对象"""
+        session._changes = {
+            'add': [obj for obj in session.new if isinstance(obj, cls)],
+            'update': [obj for obj in session.dirty if isinstance(obj, cls)],
+            'delete': [obj for obj in session.deleted if isinstance(obj, cls)]
+        }
+
+    @classmethod
+    def after_commit(cls, session):
+        """来自SQLAlchemy事件，通过事件驱动es更新索引"""
+        for obj in session._changes['add']:
+            add_to_index(cls.__tablename__, obj)
+        for obj in session._changes['update']:
+            add_to_index(cls.__tablename__, obj)
+        for obj in session._changes['delete']:
+            remove_from_index(cls.__tablename__, obj)
+        session._changes = None
+
+    @classmethod
+    def reindex(cls):
+        """数据库中的所有用户动态添加到搜索索引中"""
+        for obj in cls.query:
+            add_to_index(cls.__tablename__, obj)
+
+
+'''粉丝关联表(用户表自关联多对多)'''
 followers = db.Table('followers',
                      db.Column('follower_id', db.Integer, db.ForeignKey('user.id')),
                      db.Column('followed_id', db.Integer, db.ForeignKey('user.id'))
                      )
 
 
-class User(UserMixin, db.Model):
+class User(UserMixin, db.Model, SearchableMixin):
     """
     用户表
     :posts: 用户发送的动态，不是实际的数据表字段，一对多
     """
+    __searchable__ = ['username']
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True)
     email = db.Column(db.String(120), index=True, unique=True)
@@ -100,11 +147,12 @@ class User(UserMixin, db.Model):
         return User.query.get(id)
 
 
-class Post(db.Model):
+class Post(db.Model, SearchableMixin):
     """
     用户发送的动态表
     :user_id: user表id字段的外键约束，多对一（一个用户可发送多条动态）
     """
+    __searchable__ = ['body']  # 标记需要搜索的字段
     id = db.Column(db.Integer, primary_key=True)
     body = db.Column(db.String(140))
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)  # 时间戳加索引，有利于按时间顺序检索
@@ -119,15 +167,17 @@ class Post(db.Model):
         return '<Post {}>'.format(self.body)
 
 
-""" 用户会话是Flask分配给每个连接到应用的用户的存储空间，每当已登录的用户导航到新页面时，Flask-Login将从会话中检索用户的ID，
-然后将该用户实例加载到内存中。因为数据库对Flask-Login透明，所以需要应用来辅助加载用户。基于此，插件期望应用配置一个用户加载函数，
-可以调用该函数来加载给定ID的用户。
-"""
+db.event.listen(db.session, 'before_commit', Post.before_commit)
+db.event.listen(db.session, 'after_commit', Post.after_commit)
 
 
 @login.user_loader
 def load_user(uid):
     """
+    用户会话是Flask分配给每个连接到应用的用户的存储空间，每当已登录的用户导航到新页面时，Flask-Login将从会话中检索用户的ID，
+    然后将该用户实例加载到内存中。因为数据库对Flask-Login透明，所以需要应用来辅助加载用户。基于此，插件期望应用配置一个用户加载函数，
+    可以调用该函数来加载给定ID的用户。
+
     使用Flask-Login的@login.user_loader装饰器来为用户加载功能注册函数。即在routes/login中获取current_user
     Flask-Login将字符串类型的参数id传入用户加载函数，因此使用数字ID的数据库需要如上所示地将字符串转换为整数。
     """

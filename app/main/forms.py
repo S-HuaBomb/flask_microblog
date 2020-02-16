@@ -1,6 +1,7 @@
 """
 Flask-WTF插件使用Python类来表示Web表单。表单类只需将表单的字段定义为类属性即可。
 """
+from flask import request
 from flask_babel import _, lazy_gettext as _l  # 翻译文本
 from flask_wtf import FlaskForm  # Flask-WTF的所有内容都在flask_wtf包中
 # 由于Flask-WTF插件本身不提供字段类型，因此我直接从WTForms包中导入了四个表示表单字段的类。
@@ -35,3 +36,17 @@ class PostForm(FlaskForm):
     """
     post = TextAreaField(_l('Say Something'), validators=[DataRequired(), Length(min=1, max=200)])
     submit = SubmitField(_l('Submit'))
+
+
+class SearchForm(FlaskForm):
+    """
+    搜索框
+    """
+    q = StringField(_('Search'), validators=[DataRequired()])
+
+    def __init__(self, *args, **kwargs):
+        if 'formdata' not in kwargs:
+            kwargs['formdata'] = request.args
+        if 'csrf_enable' not in kwargs:
+            kwargs['csrf_enable'] = False
+        super(SearchForm, self).__init__(*args, **kwargs)
