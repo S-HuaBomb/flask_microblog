@@ -30,10 +30,7 @@ def before_request():
 def index():
     form = PostForm()
     if form.validate_on_submit():
-        diff = current_app.config['LANG_DIFF']  # 翻译和检测出的语言缩写不一致
         language = detect(form.post.data)  # 还是谷歌牛逼！
-        if language in diff.keys():
-            language = diff.get(language)
         if len(language) > 5:
             language = ''
 

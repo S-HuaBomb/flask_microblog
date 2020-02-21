@@ -32,7 +32,11 @@ class Config:
     """百度翻译"""
     FANYI_APP_ID = str(os.environ.get('FANYI_APP_ID'))
     FANYI_SECRET_KEY = os.environ.get('FANYI_SECRET_KEY')
-    LANG_DIFF = {'ja': 'jp', 'es': 'spa', 'fr': 'fra', 'ko': 'kor', 'zh-cn': 'zh'}  # 百度翻译语言列表，与语言检测的缩写不一致
+    # 百度翻译语言列表:
+    LANG_LIST = ['zh', 'en', 'yue', 'wyw', 'jp', 'kor', 'fra', 'spa', 'th', 'ara', 'ru', 'pt', 'de', 'it', 'el',
+                 'nl', 'pl', 'bul', 'est', 'dan', 'fin', 'cs', 'rom', 'slo', 'swe', 'hu', 'cht', 'vie']
+    # 百度翻译语言列表，与语言检测的缩写不一致:
+    LANG_DIFF = {'ja': 'jp', 'es': 'spa', 'fr': 'fra', 'ko': 'kor', 'zh-cn': 'zh', 'ro': 'rom'}
 
     """elasticsearch 配置"""
     ELASTICSEARCH_URL = os.environ.get('ELASTICSEARCH_URL')
