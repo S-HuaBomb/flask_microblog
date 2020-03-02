@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2020-02-17 14:38+0800\n"
+"POT-Creation-Date: 2020-03-02 21:49+0800\n"
 "PO-Revision-Date: 2020-02-14 15:29+0800\n"
 "Last-Translator: \n"
 "Language: zh\n"
@@ -22,7 +22,7 @@ msgstr ""
 msgid "Please log in to access this page."
 msgstr "请登录以访问该页面。"
 
-#: app/translate.py:14
+#: app/translate.py:15
 msgid "Error: The translation service is not configured."
 msgstr "错误：没有配置翻译服务器"
 
@@ -98,37 +98,37 @@ msgstr "提交"
 msgid "Say Something"
 msgstr "发动态"
 
-#: app/main/forms.py:45 app/main/routes.py:176
+#: app/main/forms.py:45 app/main/routes.py:173
 msgid "Search"
 msgstr "搜索"
 
-#: app/main/routes.py:43
+#: app/main/routes.py:40
 msgid "Your post is now live!"
 msgstr "你的动态已发布！"
 
-#: app/main/routes.py:100
+#: app/main/routes.py:97
 msgid "Your changes have been saved."
 msgstr "你的修改已生效"
 
-#: app/main/routes.py:117 app/main/routes.py:137
+#: app/main/routes.py:114 app/main/routes.py:134
 #, python-format
 msgid "User %(username)s not found"
 msgstr "用户 %(username)s 没找到"
 
-#: app/main/routes.py:120
+#: app/main/routes.py:117
 msgid "You cannot follow yourself!"
 msgstr "你不能关注自己！"
 
-#: app/main/routes.py:125
+#: app/main/routes.py:122
 #, python-format
 msgid "You are following %(username)s!"
 msgstr "你已经关注 %(username)s ！"
 
-#: app/main/routes.py:140
+#: app/main/routes.py:137
 msgid "You cannot unfollow yourself!"
 msgstr "你不能关注自己！"
 
-#: app/main/routes.py:144
+#: app/main/routes.py:141
 #, python-format
 msgid "You are not following %(username)s!"
 msgstr "你没有关注 %(username)s ！"
@@ -162,7 +162,7 @@ msgstr "主页"
 msgid "Logout"
 msgstr "退出"
 
-#: app/templates/base.html:88
+#: app/templates/base.html:89
 msgid "Error: Could not contact server."
 msgstr "错误：无法连接服务器"
 

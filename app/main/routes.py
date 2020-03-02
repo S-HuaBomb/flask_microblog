@@ -21,7 +21,12 @@ def before_request():
         db.session.commit()  # 不必要db.session.add()
         # 考虑在引用current_user时，Flask-Login将调用用户加载函数，该函数将运行一个数据库查询并将目标用户添加到数据库会话中。
         g.search_form = SearchForm()  # g变量是应用可以存储需要在整个请求期间持续存在的数据的地方
-    g.locale = str(get_locale())  # 将语言环境添加到g对象, 以便我可以从base模板中访问它,并以正确的语言配置moment.js
+
+    # 将语言环境添加到g对象, 以便我可以从base模板中访问它,并以正确的语言配置moment.js
+    locale_lang = str(get_locale())
+    if 'zh' in locale_lang:  # 浏览器认 zh-cn 而不是 zh
+        locale_lang = 'zh-cn'
+    g.locale = locale_lang
 
 
 @bp.route('/', methods=['GET', 'POST'])
