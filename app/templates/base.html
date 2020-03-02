@@ -68,7 +68,6 @@
     <!-- 日期和时间都与文本使用相同的语言 -->
     {{ moment.lang(g.locale) }}
 
-
     <script>
         function translate(srcElem, dstElem, srcLang, dstLang) {
             $(dstElem).html("<img src='{{ url_for('static', filename='loading.gif') }}'>");  // 加载图片
