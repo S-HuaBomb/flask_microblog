@@ -22,6 +22,7 @@ def translate(text_query, src_lang, dst_lang):
     elif src_lang not in lang_list:
         src_lang = 'auto'
 
+    # 拼接翻译 API
     app_id = current_app.config['FANYI_APP_ID']
     secret_key = current_app.config['FANYI_SECRET_KEY']
     salt = random.randint(32768, 65536)  # 生成url签名所需的随机数

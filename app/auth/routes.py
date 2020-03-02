@@ -71,15 +71,15 @@ def register():
 @bp.route('/reset_password_request', methods=['GET', 'POST'])
 def reset_password_request():
     """
-    邮箱认证重置密码
+    发送邮箱认证重置密码
     """
     if current_user.is_authenticated:
         return redirect(url_for('main.index'))
     form = ResetPasswordRequestForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
+        user = User.query.filter_by(email=form.email.data).first()  # 邮箱是否存在
         if user:
-            send_password_reset_email(user)  # 生成邮箱中的链接
+            send_password_reset_email(user)  # 发送邮箱，生成邮箱中的链接
             flash(_('Check your email for the instructions to reset your password'))
         return redirect(url_for('auth.login'))
     return render_template('auth/reset_password_request.html', title='重置密码', form=form)

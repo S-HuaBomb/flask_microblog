@@ -46,7 +46,6 @@ class RegistrationForm(FlaskForm):
             raise ValidationError(_('Please use a different email address'))
 
 
-
 class ResetPasswordRequestForm(FlaskForm):
     """
     输入重置密码
