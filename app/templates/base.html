@@ -34,6 +34,8 @@
                 {% endif %}
                 <ul class="nav navbar-nav navbar-right">
                     {% if current_user.is_anonymous %}
+                    <!-- is_anonymous属性是在其模型继承UserMixin类后Flask-Login添加的，
+                    表达式current_user.is_anonymous仅当用户未登录时的值是True -->
                     <li><a href="{{ url_for('auth.login') }}">{{ _('Login') }}</a></li>
                     {% else %}
                     <li><a href="{{ url_for('main.user', username=current_user.username) }}">{{ _('Profile') }}</a></li>

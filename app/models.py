@@ -195,11 +195,13 @@ db.event.listen(db.session, 'after_commit', Post.after_commit)
 @login.user_loader
 def load_user(uid):
     """
-    用户会话是Flask分配给每个连接到应用的用户的存储空间，每当已登录的用户导航到新页面时，Flask-Login将从会话中检索用户的ID，
+    用户会话(session)是Flask分配给每个连接到应用的用户的存储空间，每当已登录的用户导航到新页面时，Flask-Login将从会话中检索用户的ID，
     然后将该用户实例加载到内存中。因为数据库对Flask-Login透明，所以需要应用来辅助加载用户。基于此，插件期望应用配置一个用户加载函数，
     可以调用该函数来加载给定ID的用户。
 
     使用Flask-Login的@login.user_loader装饰器来为用户加载功能注册函数。即在routes/login中获取current_user
     Flask-Login将字符串类型的参数id传入用户加载函数，因此使用数字ID的数据库需要如上所示地将字符串转换为整数。
+
+    return: 通过 user id 查找到的 user 对象
     """
     return User.query.get(int(uid))
