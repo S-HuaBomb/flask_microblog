@@ -19,6 +19,9 @@ RUN venv/bin/pip --default-timeout=200 install -r requirements.txt
 # 安装gunicorn，以将其用作Web服务器
 RUN venv/bin/pip install gunicorn
 
+# 讲道理不应该把下面这个文件放进去
+COPY .flaskenv .flaskenv
+
 COPY app app
 COPY migrations migrations
 COPY microblog.py config.py boot.sh ./

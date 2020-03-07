@@ -9,10 +9,10 @@ from werkzeug.security import generate_password_hash, check_password_hash  # 密
 from flask_login import UserMixin
 
 """
-初始化运行flask db init(创建microblog的迁移存储库)
+初始化运行flask db init(创建microblog的迁移存储库migrations)
     数据表每次修改时，都要：
     >> flask db migrate(自动迁移将把整个User模型添加到迁移脚本中)
-    >> flask db upgrade(将更改应用到数据库)
+    >> flask db upgrade(将更改应用到数据库，生成app.db)
 """
 
 
@@ -41,6 +41,7 @@ class SearchableMixin:
             'update': [obj for obj in session.dirty if isinstance(obj, cls)],
             'delete': [obj for obj in session.deleted if isinstance(obj, cls)]
         }
+
     # @classmethod
     # def before_commit(cls, session):
     #     session._changes = {
@@ -59,6 +60,7 @@ class SearchableMixin:
         for obj in session._changes['delete']:
             remove_from_index(cls.__tablename__, obj)
         session._changes = None
+
     # @classmethod
     # def after_commit(cls, session):
     #     for obj in session._changes['add']:

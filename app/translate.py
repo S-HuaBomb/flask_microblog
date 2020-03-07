@@ -18,9 +18,13 @@ def translate(text_query, src_lang, dst_lang):
     lang_list = current_app.config['LANG_LIST']
     diff = current_app.config['LANG_DIFF']
     if src_lang in diff.keys():
-        src_lang = diff.get(dst_lang)
+        src_lang = diff.get(src_lang)
     elif src_lang not in lang_list:
         src_lang = 'auto'
+    if dst_lang in diff.keys():  # zh-cn 要换成 zh，啊，耗了我一个下午的时间！
+        dst_lang = diff.get(dst_lang)
+    else:
+        dst_lang = 'zh'
 
     # 拼接翻译 API
     app_id = current_app.config['FANYI_APP_ID']
@@ -42,9 +46,8 @@ def translate(text_query, src_lang, dst_lang):
         result_all = response.read().decode("utf-8")  # 返回json格式的翻译结果
         result = json.loads(result_all)
 
-        # print(result)
         # print(result['trans_result'][0]['dst'])
-        if result['trans_result']:
+        if 'trans_result' in result:
             dst_result = result['trans_result'][0]['dst']
             return dst_result
         else:
