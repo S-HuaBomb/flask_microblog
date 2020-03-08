@@ -14,10 +14,9 @@ COPY requirements.txt requirements.txt
 # RUN命令在容器的上下文中执行任意命令。这与你在shell提示符下输入命令相似。
 RUN python -m venv venv
 # 安装所有依赖
-RUN venv/bin/pip install cython
 RUN venv/bin/pip --default-timeout=200 install -r requirements.txt
 # 安装gunicorn，以将其用作Web服务器
-RUN venv/bin/pip install gunicorn
+RUN venv/bin/pip install gunicorn cython pymysql
 
 # 讲道理不应该把下面这个文件放进去
 COPY .flaskenv .flaskenv
